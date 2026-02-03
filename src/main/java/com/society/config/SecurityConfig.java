@@ -34,17 +34,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // 🔹 Standardize and trim origin
-        String origin = frontendUrl != null ? frontendUrl.trim() : "http://localhost:5173";
-        if (origin.endsWith("/")) {
-            origin = origin.substring(0, origin.length() - 1);
-        }
-
-        // Use Origin Patterns for more flexibility (handles https/http and subdomains
-        // better)
-        configuration.setAllowedOrigins(Arrays.asList(origin));
-        configuration.addAllowedOriginPattern(origin); // Backup for some spring versions
-        configuration.addAllowedOriginPattern("https://*.up.railway.app"); // Ultimate backup for Railway
+        // 🔹 PERMISSIVE MODE: Allow everything to "remove" CORS restrictions
+        configuration.addAllowedOriginPattern("*");
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*")); // Allow all headers for debugging
