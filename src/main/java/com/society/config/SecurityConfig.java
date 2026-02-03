@@ -12,19 +12,19 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-            // VERY IMPORTANT for Postman
-            .csrf(csrf -> csrf.disable())
+                .cors(org.springframework.security.config.Customizer.withDefaults())
+                // VERY IMPORTANT for Postman
+                .csrf(csrf -> csrf.disable())
 
-            // allow everything
-            .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()
-            )
+                // allow everything
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll())
 
-            // disable default login
-            .formLogin(form -> form.disable())
+                // disable default login
+                .formLogin(form -> form.disable())
 
-            // disable basic auth popup
-            .httpBasic(basic -> basic.disable());
+                // disable basic auth popup
+                .httpBasic(basic -> basic.disable());
 
         return http.build();
     }

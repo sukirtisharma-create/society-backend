@@ -18,13 +18,12 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
 
                 registry.addMapping("/**")
-                        .allowedOrigins(frontendUrl)
+                        .allowedOrigins(frontendUrl.trim())
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
-                        .allowCredentials(true); // 🔥 REQUIRED FOR SESSION
+                        .allowCredentials(true);
             }
         };
     }
 
 }
-
