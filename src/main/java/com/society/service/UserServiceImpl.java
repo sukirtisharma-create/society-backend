@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserService {
         if (user.getRole() == Role.RESIDENT && user.getFlat() == null) {
             throw new RuntimeException("Your account is pending admin approval. Please wait until a flat is assigned.");
         }
-        
+
         // ✅ store logged-in user in session
         session.setAttribute("LOGGED_USER_ID", user.getUserId());
 
@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
         if (user.getFlat() != null) {
             flatId = user.getFlat().getFlatId();
         }
-        
+
         // ✅ FULL RESPONSE (Postman-friendly)
         return new LoginResponseDTO(
                 user.getUserId(),
@@ -105,75 +105,71 @@ public class UserServiceImpl implements UserService {
                 user.getRole().name(),
                 user.getSociety().getSocietyId(),
                 flatId,
-                user.getEmail(),          
-                user.getPhone()
-        );
-        
+                user.getEmail(),
+                user.getPhone());
+
     }
 
-	@Override
-	public LoginResponseDTO getUserById(Integer userId) {
-	    User user = userRepository.findById(userId)
-	            .orElseThrow(() -> new RuntimeException("User not found"));
+    @Override
+    public LoginResponseDTO getUserById(Integer userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-	    return new LoginResponseDTO(
-	            user.getUserId(),
-	            user.getFirstName() + " " + user.getLastName(),
-	            user.getRole().name(),
-	            user.getSociety().getSocietyId(),
-	            user.getFlat().getFlatId(),  
-	            user.getEmail(),                
-	            user.getPhone()
-	    );
-	}
+        return new LoginResponseDTO(
+                user.getUserId(),
+                user.getFirstName() + " " + user.getLastName(),
+                user.getRole().name(),
+                user.getSociety().getSocietyId(),
+                user.getFlat().getFlatId(),
+                user.getEmail(),
+                user.getPhone());
+    }
 
-	@Override
-	public User getLoggedInUser(HttpSession session) {
-	    Integer userId = (Integer) session.getAttribute("LOGGED_USER_ID");
+    @Override
+    public User getLoggedInUser(HttpSession session) {
+        Integer userId = (Integer) session.getAttribute("LOGGED_USER_ID");
 
-	    if (userId == null) {
-	        throw new RuntimeException("User not logged in");
-	    }
+        if (userId == null) {
+            throw new RuntimeException("User not logged in");
+        }
 
-	    return userRepository.findById(userId)
-	            .orElseThrow(() -> new RuntimeException("Logged-in user not found"));
-	}
-	
-	
-	@Override
-	public void forgotPassword(String email) {
-	    User user = userRepository.findByEmail(email)
-	                  .orElseThrow(() -> new RuntimeException("Email not found"));
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Logged-in user not found"));
+    }
 
-	    String token = UUID.randomUUID().toString();
-	    user.setResetToken(token);
-	    user.setTokenExpiry(LocalDateTime.now().plusHours(1)); // valid for 1 hour
+    @Override
+    public void forgotPassword(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Email not found"));
 
-	    userRepository.save(user);
+        String token = UUID.randomUUID().toString();
+        user.setResetToken(token);
+        user.setTokenExpiry(LocalDateTime.now().plusHours(1)); // valid for 1 hour
 
-	    // Simulate sending email: in real app, send email with token link
-	    System.out.println("Reset link: http://localhost:3000/reset-password?token=" + token);
-	}
-	
-	@Override
-	public void resetPassword(String token, String newPassword) {
-	    User user = userRepository.findByResetToken(token)
-	                  .orElseThrow(() -> new RuntimeException("Invalid token"));
+        userRepository.save(user);
 
-	    if (user.getTokenExpiry().isBefore(LocalDateTime.now())) {
-	        throw new RuntimeException("Token expired");
-	    }
+        // Simulate sending email: in real app, send email with token link
+        System.out.println("Reset link generated for user: " + user.getEmail());
 
-	    user.setPassword(passwordEncoder.encode(newPassword));
-	    user.setResetToken(null);
-	    user.setTokenExpiry(null);
+    }
 
-	    userRepository.save(user);
-	}
-	
-	
-	
-	// Actual which we are using for forgot password
+    @Override
+    public void resetPassword(String token, String newPassword) {
+        User user = userRepository.findByResetToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid token"));
+
+        if (user.getTokenExpiry().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Token expired");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setResetToken(null);
+        user.setTokenExpiry(null);
+
+        userRepository.save(user);
+    }
+
+    // Actual which we are using for forgot password
     // Find user by email
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
