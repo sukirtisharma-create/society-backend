@@ -40,11 +40,16 @@ public class SecurityConfig {
             origin = origin.substring(0, origin.length() - 1);
         }
 
+        // Use Origin Patterns for more flexibility (handles https/http and subdomains
+        // better)
         configuration.setAllowedOrigins(Arrays.asList(origin));
+        configuration.addAllowedOriginPattern(origin); // Backup for some spring versions
+        configuration.addAllowedOriginPattern("https://*.up.railway.app"); // Ultimate backup for Railway
+
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(
-                Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With", "Origin"));
+        configuration.setAllowedHeaders(Arrays.asList("*")); // Allow all headers for debugging
         configuration.setAllowCredentials(true);
+
         configuration.setMaxAge(3600L); // Cache preflight for 1 hour
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
