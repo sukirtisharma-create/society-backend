@@ -35,11 +35,11 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // 🔹 PERMISSIVE MODE: Allow everything to "remove" CORS restrictions
-       // configuration.addAllowedOriginPattern("*");
+       configuration.addAllowedOriginPattern("*");
         //changes
-        configuration.setAllowedOrigins(
-        	    Arrays.asList(frontendUrl)
-        	);
+       // configuration.setAllowedOrigins(
+        	    //Arrays.asList(frontendUrl)
+        	//);
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*")); // Allow all headers for debugging
